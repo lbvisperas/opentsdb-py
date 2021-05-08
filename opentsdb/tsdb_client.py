@@ -19,9 +19,9 @@ class TSDBClient:
     TSDB_PORT = int(environ.get('OPEN_TSDB_PORT', 4242))
     TSDB_URI = environ.get('OPEN_TSDB_URI')
 
-    TSDB_MAX_METRICS_QUEUE_SIZE = int(environ.get('TSDB_MAX_METRICS_QUEUE_SIZE', 10000))
+    TSDB_MAX_METRICS_QUEUE_SIZE = int(environ.get('TSDB_MAX_METRICS_QUEUE_SIZE', 100000))
     TSDB_SEND_METRICS_PER_SECOND_LIMIT = int(environ.get('TSDB_SEND_METRICS_PER_SECOND_LIMIT', 1000))
-    TSDB_SEND_METRICS_BATCH_LIMIT = int(environ.get('TSDB_SEND_METRICS_BATCH_LIMIT', 50))
+    TSDB_SEND_METRICS_BATCH_LIMIT = int(environ.get('TSDB_SEND_METRICS_BATCH_LIMIT', 1000))
     TSDB_DEFAULT_HTTP_COMPRESSION = environ.get('TSDB_DEFAULT_HTTP_COMPRESSION', 'gzip')
     VALID_METRICS_CHARS = set(string.ascii_letters + string.digits + '-_./')
 
@@ -104,8 +104,8 @@ class TSDBClient:
 
     def send(self, name: str, value, **tags) -> dict:
         tags.update(self.static_tags)
-        if self.host_tag is True and 'host' not in tags:
-            tags['host'] = socket.gethostname()
+        #if self.host_tag is True and 'host' not in tags:
+        #    tags['host'] = socket.gethostname()
 
         self._validate_metric(name, value, tags)
         metric = dict(metric=name, timestamp=int(tags.pop('timestamp', time.time())), value=value, tags=tags)
