@@ -102,13 +102,13 @@ class TSDBClient:
     def queue_size(self) -> int:
         return self._metrics_queue.qsize()
 
-    def send(self, name: str, value, timestamp, **tags) -> dict:
+    def send(self, name: str, value, timestamp1, **tags) -> dict:
         tags.update(self.static_tags)
         #if self.host_tag is True and 'host' not in tags:
         #    tags['host'] = socket.gethostname()
 
         self._validate_metric(name, value, tags)
-        metric = dict(metric=name, timestamp=timestamp, value=value, tags=tags)
+        metric = dict(metric=name, timestamp=int(tags.pop('timestamp', timestamp1)) value=value, tags=tags)
 
         if not self._close_client.is_set():
             self._push_metric_to_queue(metric)
